@@ -6,6 +6,9 @@ import uuid
 import json
 import urllib.request
 import urllib.parse
+from io import BytesIO
+from PIL import Image
+import random
 
 server_address = "127.0.0.1:8188"
 client_id = str(uuid.uuid4())
@@ -67,24 +70,52 @@ def get_images(ws, prompt_id):
 
     return output_images
 
+def process_first_image(images):
+    # 获取第一个node_id下的所有image_data
+    first_node_images = images.get(next(iter(images), []), [])  # 默认获取第一个key的值，如果images为空则返回空列表
+    
+    if first_node_images:  # 确保列表不为空
+        # 处理第一个image_data
+        image_data = first_node_images[0]
+        
+        # 将image_data转换为PIL Image对象并保存为BytesIO
+        image = Image.open(BytesIO(image_data))
+        byte_arr = BytesIO()
+        image.save(byte_arr, format='JPEG')
+        byte_arr.seek(0)
+        
+        return byte_arr
+    else:
+        return None  # 或者根据需要处理没有图像的情况
 
-prompt = json.loads(readfile("workflow/basic.json"))
-prompt["6"]["inputs"]["text"] = "masterpiece best quality man"
+def get_images_from_comfyui(prompt:str):
+    print("[get_images_from_comfyui]===============start")
+    workflow = json.loads(readfile("workflow/basic.json"))
+    workflow["6"]["inputs"]["text"] = prompt
 
-#set the seed for our KSampler node
-prompt["3"]["inputs"]["seed"] = 5
+    workflow["3"]["inputs"]["seed"] = random.randint(1, 1000000000)
 
-ws = websocket.WebSocket()
-ws.connect("ws://{}/ws?clientId={}".format(server_address, client_id))
-prompt_id = queue_prompt(prompt)
-images = get_images(ws, prompt_id)
+    ws = websocket.WebSocket()
+    ws.connect("ws://{}/ws?clientId={}".format(server_address, client_id))
+    prompt_id = queue_prompt(workflow)
+    images = get_images(ws, prompt_id)
+    print("[get_images_from_comfyui]===============end")
+    return process_first_image(images)
+    
 
-# Commented out code to display the output images:
 
-for node_id in images:
-    for image_data in images[node_id]:
-        from PIL import Image
-        import io
+if __name__ == "__main__":
+    prompt = json.loads(readfile("workflow/basic.json"))
+    prompt["6"]["inputs"]["text"] = "masterpiece best quality man"
 
-        image = Image.open(io.BytesIO(image_data))
-        image.show()
+    # set the seed for our KSampler node
+    prompt["3"]["inputs"]["seed"] = 5
+
+    ws = websocket.WebSocket()
+    ws.connect("ws://{}/ws?clientId={}".format(server_address, client_id))
+    prompt_id = queue_prompt(prompt)
+    images = get_images(ws, prompt_id)
+
+    # Commented out code to display the output images:
+    process_first_image(images)
+
