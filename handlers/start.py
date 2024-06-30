@@ -30,13 +30,13 @@ async def start(update: Update, context: CallbackContext) -> None:
 
     keyboard = [
         [
-            InlineKeyboardButton("Generate Image", callback_data='generate_image'),
-            InlineKeyboardButton("Daily Sign-in", callback_data='daily_signin')
+            InlineKeyboardButton("Generate Image", callback_data="generate_image"),
+            InlineKeyboardButton("Daily Sign-in", callback_data="daily_signin"),
         ],
         [
-            InlineKeyboardButton("Leaderboard", callback_data='leaderboard'),
-            InlineKeyboardButton("Invite Friends", callback_data='invite_friends')
-        ]
+            InlineKeyboardButton("Leaderboard", callback_data="leaderboard"),
+            InlineKeyboardButton("Invite Friends", callback_data="invite_friends"),
+        ],
     ]
 
     reply_markup = InlineKeyboardMarkup(keyboard)

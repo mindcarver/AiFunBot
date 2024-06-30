@@ -1,1 +1,2 @@
 websocket_client==1.7.0
+pymysql==1.0.0
