@@ -1,7 +1,7 @@
 from telegram import Update
 from telegram.ext import CallbackContext
 from constant import IMAGE_GENERATION
-from comfyui.comfyui_websocket import get_images_from_comfyui
+from services.comfyui.comfyui_websocket import get_images_from_comfyui
 async def handle_image_generation(update: Update, context: CallbackContext) -> int:
     user_prompt = update.message.text
     await update.message.reply_text(f"Generating image for prompt: {user_prompt}")
