@@ -1,6 +1,7 @@
 # handlers/start.py
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackContext, ConversationHandler
+from utils.tool import generate_invitation_code
 
 
 async def start(update: Update, context: CallbackContext) -> None:
@@ -27,6 +28,8 @@ async def start(update: Update, context: CallbackContext) -> None:
 - 💡 Earn more points
 💎💎💎 Join AIFact Chat (http://t.me/AIFact_chat), share your artworks, and help your favorite works move up the ranks on the leaderboard to receive more points!
     """
+
+    ## 记录用户的信息 持久化到数据库
 
     keyboard = [
         [
